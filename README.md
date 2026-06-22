@@ -4,7 +4,7 @@
 
 This project delivers a comprehensive credit risk intelligence system built on Nova Bank's consumer lending portfolio — a 32,581-loan book spanning the USA, UK, and Canada, representing $312.43M in total principal exposure across six loan purposes and seven risk grades.
 
-The analysis covers the full data lifecycle: raw data ingestion and transformation in Power Query, a purpose-built star schema model in Power BI, a 50+ measure DAX library organized across 11 functional folders, and a six-page interactive dashboard designed to serve both executive-level decision-making and deep credit risk investigation.
+The analysis spans the full BI lifecycle: raw data transformation in Power Query, a purpose-built star schema in Power BI, a 50+ measure DAX layer, and a six-page interactive dashboard built for both executive decision-making and deep credit risk investigation.
 
 The findings reveal a portfolio operating at more than double its target default rate, with systemic risk distributed uniformly across all geographies, demographics, and loan purposes — pointing to structural underwriting gaps rather than isolated problem segments.
 
@@ -17,7 +17,7 @@ The findings reveal a portfolio operating at more than double its target default
 
 | Page | Purpose |
 |------|---------|
-| Executive Overview | Portfolio health KPIs, grade performance, geographic heatmap, risk distribution |
+| Executive Overview | Portfolio health KPI cards, grade performance, geographic heatmap, and risk distribution |
 | Risk Assessment | Default rate matrix, risk score distribution, DTI vs LTI scatter, employment and credit history analysis |
 | Borrower Profile | Demographic KPIs, age and income segmentation, home ownership analysis, borrower persona treemap |
 | Geographic Analysis | Drill-down global risk map (country to state to city), country comparison, city-level performance table |
@@ -55,7 +55,7 @@ The raw Excel dataset passes through a structured transformation pipeline before
 - DataQualityFlag column with a 40+ condition validation cascade covering missing values, type errors, impossible values, policy violations, high-risk flags, and a final Valid label for clean rows
 - Text standardization: UPPERCASE for loan codes, Proper Case for demographic display fields, whitespace trim across all text columns
 - Null handling: Unknown for categorical text fields; 0 for employment length, other debt, and past delinquencies; nulls preserved for interest rate since no business logic justifies a substitute value
-- 13 calculated columns built in Power Query: AgeGroup, IncomeBand, IncomeBand Sort, LoanSizeCategory, RiskTier, DTICategory, LTICategory, CreditUtilizationCategory, EmploymentStability, CreditHistoryMaturity, HasPreviousDefault, SimpleRiskScore, Region
+- 12 calculated columns built in Power Query: AgeGroup, IncomeBand, LoanSizeCategory, RiskTier, DTICategory, LTICategory, CreditUtilizationCategory, EmploymentStability, CreditHistoryMaturity, HasPreviousDefault, SimpleRiskScore, Region
 - SimpleRiskScore: a weighted composite of seven default risk factors — prior default history (30 pts), past delinquencies (5 pts each), high DTI (20 pts), high LTI (15 pts), high credit utilization (10 pts), unemployment (15 pts), high loan grade tier (20 pts)
 
 ### Data Model — Star Schema
@@ -70,34 +70,30 @@ Four-table star schema with FactLoans at the center:
 |-------|------|------|
 | FactLoans | Central transaction fact table | 32,581 |
 | DimGeography | Location dimension | 18 unique cities |
-| DimBorrower | Borrower profile dimension | ~33,000 unique clients |
+| DimBorrower | Borrower profile dimension | ~32.6K unique borrowers |
 | DimLoan | Loan characteristic dimension | 32,581 |
 
 ### DAX Measures Library
 
-50+ measures organized across 11 folders:
+The report is powered by a 50+ measure DAX layer organized into 11 functional groups, including:
 
-| Folder | Key Measures |
-|--------|-------------|
-| 01. Core Counts | Total Loans, Total Borrowers, Total Loan Amount, Average Loan Amount |
-| 02. Default Analysis | Total Defaults, Default Rate, Expected Loss, Default Loss Amount |
-| 03. Risk-Adjusted Performance | Gross/Net Interest Income, Return on Loan Portfolio, High Risk Loan %, Portfolio Health Score |
-| 04. Borrower Segmentation | Average Borrower Age/Income, Home Ownership Rate, Previous Default Rate, Employment Length KPIs |
-| 05. Financial Ratios | Average DTI/LTI/Credit Utilization, High DTI %, Loans in Warning Zone, Warning Zone Percentage |
-| 06. Geographic | USA Default Rate, UK Default Rate, Canada Default Rate |
-| 07. Loan Characteristics | Average Loan Term, Short/Long Term Loan Counts |
-| 08. Conditional Formatting | Default Rate Color, Performance Arrow, Performance Arrow Label, Warning Zone Color |
-| 09. KPI Targets | Target Default Rate, Portfolio Health Status, Portfolio Health Score, Default Rate vs Target |
-| 10. Predictive Indicators | Model Accuracy, Sensitivity, Specificity, Precision, F1 Score, Predicted Default Probability |
-| 11. Helper Measures | Portfolio Share, Drill-Through Context, Warning Zone Reference Label |
+- Portfolio counts and exposure
+- Default analysis and expected loss
+- Risk-adjusted performance
+- Borrower segmentation metrics
+- Financial stress indicators
+- Geographic comparisons
+- Predictive monitoring metrics
+- KPI and conditional-formatting helper logic
 
 Notable technical implementations:
 
-- Dynamic format strings for the Average Employment Length KPI and Average Credit History Length KPI cards, displaying as 4.7 yrs and 5.8 yrs without converting the underlying numeric measure to text
-- Bookmark-based Reset Detail Page button on the Detailed View page to clear stuck drill-through filter contexts that persist after navigation
-- Rules-based conditional formatting on the Borrower Profile treemap as a workaround for the missing Color saturation field well in the current Power BI version, using Default Rate thresholds relative to the portfolio average to assign green, orange, or red to each borrower profile block
-- Line and clustered column chart used for all dual-axis combo visuals (Employment Type, Age Group, Major Metro vs Secondary Market) — the correct visual type for reliable secondary axis line rendering
-- Risk Score Validation built as a line chart using Risk Score Bin on the X-axis and Default Rate on the Y-axis, replacing an original scatter plot design that was abandoned because binary loan_status values (0 or 1) produced an unreadable two-position dot cloud with no analytical value
+- Dynamic format strings applied to KPI-only display measures so Employment Length and Credit History Length cards render as `4.7 yrs` and `5.8 yrs` without converting the underlying measures to text
+- Bookmark-based reset button added to the Detailed View page to clear persistent drill-through context and restore the page to its default state
+- Treemap conditional-formatting workaround implemented to replace the missing `Color saturation` field well in the current Power BI build
+- Azure Maps configured with gradient conditional formatting through the Filled map layer, using `Default Rate` as the field driving region shading
+- Line and clustered column chart used for all dual-axis visuals to ensure reliable secondary-axis line rendering
+- Risk Score Validation redesigned as a line chart using `Risk Score Bin` and `Default Rate`, replacing an abandoned scatter plot that proved technically and analytically unsuitable for binary loan outcome data
 
 ---
 
@@ -129,7 +125,7 @@ The grading system is not broken. The approval volume at Grades D through G is.
 
 ### 3. Geography Is Not the Problem
 
-Default rates are statistically indistinguishable across all three countries and nine geographic units.
+Default rates are operationally very similar across all three countries and nine geographic units.
 
 | Country | Default Rate |
 |---------|-------------|
@@ -162,7 +158,7 @@ OWN borrowers are the only group in this portfolio performing below the 8% targe
 | Precision | 60.57% | Acceptable |
 | F1 Score | 19.48% | Critical |
 
-The score is directionally valid — the Risk Score Validation chart shows a clear upward trend from 13.96% default rate in the 0-20 bin to 100% in the 100+ bin. But the model's 30-point weighting on prior default history, combined with only 18% of borrowers having a prior default on file, leaves 82% of the borrower population entering the system with zero points on the heaviest factor. The result is a model that almost never generates false alarms (97.89% Specificity) but catches only 11.61% of actual future defaults. 88% of defaults are occurring in loans the model classified as safe.
+The score is directionally valid but overweights prior default history. Because only 18% of borrowers have a prior default on file, the model misses most future defaults despite its very high specificity.
 
 ### 6. Three of Four Early Warning Gauges Are Near Their Thresholds
 
@@ -198,27 +194,10 @@ The data does not support shifting lending concentration by country or region. D
 
 ## Tools and Technologies
 
-- Power BI Desktop (Power Query, Data Modelling, DAX, Azure Maps visual)
+- Power BI Desktop (Power Query, data modeling, DAX, Azure Maps)
 - Microsoft Excel (data source)
 - DAX (50+ custom measures across 11 organized folders)
 - Power Query M Language (full transformation pipeline from raw load to star schema)
-
----
-
-## Repository Structure
-    nova-bank-credit-risk-analytics/
-    |
-    |-- README.md
-    |-- Credit_Risk_Dataset_Onyx_Data_September_25.xlsx
-    |-- CREDIT RISK ANALYTICS v1.pbix
-    |
-    |-- IMAGES/
-    |   |-- 1.Executive_Overview.jpg
-    |   |-- 2.Risk_Assessment.jpg
-    |   |-- 3.Borrower_Profile.jpg
-    |   |-- 4.Geographic_Analysis.jpg
-    |   |-- 5.Predictive_Monitoring.jpg
-    |   |-- 6.Detailed_View.jpg
 
 ---
 
