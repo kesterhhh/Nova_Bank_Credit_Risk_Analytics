@@ -2,13 +2,13 @@
 
 ## Project Overview
 
-This project delivers a comprehensive credit risk intelligence system built on Nova Bank's consumer lending portfolio — a 32,581-loan book spanning the USA, UK, and Canada, representing $312.43M in total principal exposure across six loan purposes and seven risk grades.
+This project delivers a comprehensive credit risk intelligence system built on Nova Bank's consumer lending portfolio: a 32,581-loan book spanning the USA, UK, and Canada, representing $312.43M in total principal exposure across six loan purposes and seven risk grades.
 
 The analysis spans the full BI lifecycle: raw data transformation in Power Query, a purpose-built star schema in Power BI, a 50+ measure DAX layer, and a six-page interactive dashboard built for both executive decision-making and deep credit risk investigation.
 
-The findings reveal a portfolio operating at more than double its target default rate, with systemic risk distributed uniformly across all geographies, demographics, and loan purposes — pointing to structural underwriting gaps rather than isolated problem segments.
+The findings reveal a portfolio operating at more than double its target default rate, with systemic risk distributed uniformly across all geographies, demographics, and loan purposes, pointing to structural underwriting gaps rather than isolated problem segments.
 
-> Portfolio Health Score: 19/100 — Critical
+> Portfolio Health Score: 19/100 (Critical)
 > Default Rate: 21.82% | Target: 8% | Net Interest Income: -$8.91M
 
 ---
@@ -56,7 +56,7 @@ The raw Excel dataset passes through a structured transformation pipeline before
 - Text standardization: UPPERCASE for loan codes, Proper Case for demographic display fields, whitespace trim across all text columns
 - Null handling: Unknown for categorical text fields; 0 for employment length, other debt, and past delinquencies; nulls preserved for interest rate since no business logic justifies a substitute value
 - 12 calculated columns built in Power Query: AgeGroup, IncomeBand, LoanSizeCategory, RiskTier, DTICategory, LTICategory, CreditUtilizationCategory, EmploymentStability, CreditHistoryMaturity, HasPreviousDefault, SimpleRiskScore, Region
-- SimpleRiskScore: a weighted composite of seven default risk factors — prior default history (30 pts), past delinquencies (5 pts each), high DTI (20 pts), high LTI (15 pts), high credit utilization (10 pts), unemployment (15 pts), high loan grade tier (20 pts)
+- SimpleRiskScore: a weighted composite of seven default risk factors: prior default history (30 pts), past delinquencies (5 pts each), high DTI (20 pts), high LTI (15 pts), high credit utilization (10 pts), unemployment (15 pts), high loan grade tier (20 pts)
 
 ### Data Model — Star Schema
 
@@ -107,7 +107,7 @@ A 21.82% default rate against an 8% target produces negative net economics acros
 - Return on Loan Portfolio: -2.85%
 - Portfolio Health Score: 19/100 — Critical
 
-### 2. The Grading System Is Accurate — But Grade A Is Already Above Target
+### 2. The Grading System Is Accurate, But Grade A Is Already Above Target
 
 Default rates by grade confirm the system is predictively valid and risk escalates clearly across every tier. The problem is that even the bank's best-graded borrowers are performing above the target threshold.
 
@@ -137,7 +137,7 @@ The spread across all nine states and provinces is only 1.6 percentage points (W
 
 ### 4. Home Ownership Is the Strongest Borrower Predictor
 
-Demographics — education level, marital status, age group — show almost no meaningful variation in default rates (ranging from 19% to 25% across all matrix intersections). Home ownership tells an entirely different story.
+Demographics such as education level, marital status, and age group show almost no meaningful variation in default rates (ranging from 19% to 25% across all matrix intersections). Home ownership tells an entirely different story.
 
 | Home Ownership | Default Rate |
 |---------------|-------------|
